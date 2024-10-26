@@ -1,42 +1,40 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
+using Mirror;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(PlayerInput))]
-public class PlayerManager : MonoBehaviour
+public class PlayerManager : NetworkBehaviour
 {
-    public float coolDownTime = 0.3f;
+    [SerializeField] float shootCooldown;
 
     private float lastShootTime;
     private LayerMask layerMask;
     private Camera mainCamera;
 
-    [SerializeField] private TextMeshProUGUI scoreText;
-    public int PlayerScore { get; private set; }
-
-    void Start()
-    {
+    private void Start() {
         mainCamera = Camera.main;
         layerMask = LayerMask.GetMask("Birds");
-        Debug.Log(layerMask.value);
-        PlayerScore = 0;
     }
 
-    void OnShoot()
-    {
-        if(Time.time - lastShootTime >= coolDownTime)
+    [Client]
+    public void OnShoot(){
+        float shootTime = Time.time;
+        if(shootTime - lastShootTime >= shootCooldown)
         {
             RaycastHit2D hit = Physics2D.GetRayIntersection(mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue()), Mathf.Infinity, layerMask);
 
             if(hit.collider != null)
             {
                 lastShootTime = Time.time;
-                PlayerScore += 10;
-                scoreText.text = "Score: " + PlayerScore.ToString("D6");
+                CmdShoot();
             }
         }
+    }
+
+    [Command(requiresAuthority = false)]
+    void CmdShoot()
+    {
+       Debug.Log(connectionToClient);
+       Global.Instance.player1Score.text = "AAAAAAAAAA";
     }
 }
