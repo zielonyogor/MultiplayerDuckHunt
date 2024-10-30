@@ -5,13 +5,14 @@ using UnityEngine;
 
 public class HostManager : PlayerManager
 {
-    void Start()
+    protected override void Start()
     {
+        base.Start();
         Debug.Log("I'm host");
     }
 
-    void Update()
+    protected override void Update()
     {
-        
+        base.Update();
     }
 }
