@@ -1,11 +1,12 @@
 using UnityEngine;
 using Mirror;
 using UnityEngine.InputSystem;
-using Edgegap;
 
 [RequireComponent(typeof(PlayerInput))]
 public class PlayerManager : NetworkBehaviour
 {
+    [SyncVar] public int playerID;
+
     public PlayerInput playerInput { get; private set; }
     [SerializeField] float shootCooldown;
 
@@ -25,9 +26,15 @@ public class PlayerManager : NetworkBehaviour
         stateMachine = new StateMachine();
         gameState = new GameState(this, stateMachine);
         lobbyState = new LobbyState(this, stateMachine);
+
         stateMachine.Init(lobbyState);
 
         layerMask = LayerMask.GetMask("Birds");
+    }
+
+    public void EnterGame()
+    {
+        stateMachine.Change(gameState);
     }
 
     virtual protected void Update()
@@ -45,15 +52,8 @@ public class PlayerManager : NetworkBehaviour
             if(hit.collider != null)
             {
                 lastShootTime = Time.time;
-                CmdShoot();
+                gameContainer.CmdUpdateScore(playerID);
             }
         }
-    }
-
-    [Command(requiresAuthority = false)]
-    void CmdShoot()
-    {
-       Debug.Log(connectionToClient);
-       gameContainer.player1Score.text = "AAAAAAAAAA";
     }
 }
