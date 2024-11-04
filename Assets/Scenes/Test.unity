@@ -878,8 +878,8 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  player1Score: {fileID: 304305906}
-  player2Score: {fileID: 652310804}
+  player1ScoreText: {fileID: 304305906}
+  player2ScoreText: {fileID: 652310804}
   mainCamera: {fileID: 832654940}
 --- !u!114 &1853308662
 MonoBehaviour:

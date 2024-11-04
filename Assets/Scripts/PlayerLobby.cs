@@ -18,8 +18,7 @@ public class PlayerLobby : NetworkBehaviour
 
     public override void OnStartClient()
     {
-        //Lobby.lobbyPlayers.Add(this);
-        if (!isServer)
+        if (isLocalPlayer && !isServer)
         {
             Debug.Log("this is only a client, shouldn't have start game button");
         }
@@ -27,7 +26,7 @@ public class PlayerLobby : NetworkBehaviour
 
     public override void OnStopClient()
     {
-        //Lobby.lobbyPlayers.Remove(this);
+        Lobby.lobbyPlayers.Remove(this);
     }
 
     public override void OnStartServer()

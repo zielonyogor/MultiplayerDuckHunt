@@ -2,6 +2,7 @@ using UnityEngine;
 using Mirror;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System;
 
 public class CustomNetworkManager : NetworkManager
 {
@@ -13,12 +14,10 @@ public class CustomNetworkManager : NetworkManager
     public List<PlayerLobby> lobbyPlayers = new List<PlayerLobby>();
     [HideInInspector]
     public List<PlayerGameManager> gamePlayers = new List<PlayerGameManager>();
-
-    private List<NetworkConnectionToClient> connectionsToReplace = new List<NetworkConnectionToClient>();
+    private List<Tuple<NetworkConnectionToClient, int>> connectionsToReplace = new List<Tuple<NetworkConnectionToClient, int>>();
 
     public override void OnServerAddPlayer(NetworkConnectionToClient conn)
     {
-        Debug.Log("hellooo");
         PlayerLobby player = Instantiate(lobbyPlayerPrefab);
         player.playerID = numPlayers;
         player.gameObject.name = "LobbyPlayer_" + player.playerID;
@@ -33,11 +32,6 @@ public class CustomNetworkManager : NetworkManager
         // add ServerChangeScene() to 'if' later
         if (numPlayers == 2)
         { }
-        foreach (var player in lobbyPlayers)
-        {
-            if (!player.connectionToClient.isReady)
-                player.connectionToClient.Send(new Mirror.ReadyMessage());
-        }
         ServerChangeScene("Test");
     }
 
@@ -46,7 +40,7 @@ public class CustomNetworkManager : NetworkManager
         connectionsToReplace.Clear();
         foreach (var player in lobbyPlayers)
         {
-            connectionsToReplace.Add(player.connectionToClient);
+            connectionsToReplace.Add(new Tuple<NetworkConnectionToClient, int>(player.connectionToClient, player.playerID));
         }
         base.ServerChangeScene(newSceneName);
     }
@@ -56,18 +50,25 @@ public class CustomNetworkManager : NetworkManager
         if (sceneName == "Test")
         {
 
-            foreach (var conn in connectionsToReplace)
+            foreach (var (conn, id) in connectionsToReplace)
             {
                 var gamePlayerInstance = Instantiate(gamePlayerPrefab);
-                gamePlayerInstance.name = "Player_" + conn.connectionId;
+                gamePlayerInstance.name = "Player_" + id;
+                gamePlayerInstance.playerID = id;
+                gamePlayers.Add(gamePlayerInstance);
+
                 // waiting for client to be ready works for now
                 await WaitForClientReady(conn);
 
                 NetworkServer.ReplacePlayerForConnection(conn, gamePlayerInstance.gameObject, ReplacePlayerOptions.KeepAuthority);
                 Debug.Log($"Replaced player for connection: {conn.connectionId}, New player instance: {gamePlayerInstance.name}");
             }
-
             connectionsToReplace.Clear();
+            foreach (var player in lobbyPlayers)
+            {
+                Destroy(player.gameObject);
+                Debug.Log("deleted");
+            }
             lobbyPlayers.Clear();
         }
     }

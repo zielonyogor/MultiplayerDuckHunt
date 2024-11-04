@@ -16,7 +16,7 @@ public class LobbyContainer : MonoBehaviour
     {
         networkManager = NetworkManager.singleton as CustomNetworkManager; ;
         startGameButton.onClick.AddListener(StartGame);
-        addressInputField.onValueChanged.AddListener(delegate
+        addressInputField.onEndEdit.AddListener(delegate
         {
             ChangeButtonFunctionality(addressInputField.text);
         });
