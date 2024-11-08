@@ -7,16 +7,21 @@ public class GameContainer : NetworkBehaviour
     [SerializeField] TextMeshProUGUI player1ScoreText, player2ScoreText;
 
     [SyncVar(hook = nameof(OnPlayer1ScoreChanged))]
-    private int player1Score;
+    private int player1Score = 0;
 
     [SyncVar(hook = nameof(OnPlayer2ScoreChanged))]
-    private int player2Score;
-
+    private int player2Score = 0;
     public Camera mainCamera;
 
-    [Command(requiresAuthority = false)]
-    public void CmdUpdateScore(int playerID)
+    public override void OnStartServer()
     {
+        PigeonManager.OnPigeonShot.AddListener(UpdateScore);
+        Debug.Log("skibidi");
+    }
+
+    public void UpdateScore(int playerID, int pigeonID)
+    {
+        Debug.Log("Updating score");
         if (playerID == 0)
         {
             player1Score += 10;

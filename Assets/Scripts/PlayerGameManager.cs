@@ -1,6 +1,7 @@
 using UnityEngine;
 using Mirror;
 using UnityEngine.InputSystem;
+using System;
 
 public class PlayerGameManager : NetworkBehaviour
 {
@@ -22,8 +23,8 @@ public class PlayerGameManager : NetworkBehaviour
     [SerializeField] float shootCooldown = 0.5f;
 
     private float lastShootTime = 0;
-    private LayerMask layerMask;
-    public GameContainer gameContainer;
+    public PigeonManager pigeonManager;
+    public Camera mainCamera;
 
     private void OnPlayerIDChange(int oldID, int newID)
     {
@@ -38,26 +39,27 @@ public class PlayerGameManager : NetworkBehaviour
     public override void OnStartAuthority()
     {
         playerInput = GetComponent<PlayerInput>();
-        gameContainer = GameObject.FindGameObjectWithTag("UI").GetComponent<GameContainer>();
-        layerMask = LayerMask.GetMask("Birds");
+        pigeonManager = GameObject.FindGameObjectWithTag("PigeonManager").GetComponent<PigeonManager>();
+        mainCamera = Camera.main;
+        if (mainCamera == null)
+        {
+            Debug.Log("ciekawe");
+        }
+        else
+        {
+            Debug.Log("camera powinna być");
+        }
     }
 
     [Client]
     public void OnShoot()
     {
         if (!isLocalPlayer) return;
-        Debug.Log(playerID);
         float shootTime = Time.time;
         if (shootTime - lastShootTime >= shootCooldown)
         {
-            RaycastHit2D hit = Physics2D.GetRayIntersection(gameContainer.mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue()), Mathf.Infinity, layerMask);
-
-            if (hit.collider != null)
-            {
-                Debug.Log("shot");
-                lastShootTime = Time.time;
-                gameContainer.CmdUpdateScore(playerID);
-            }
+            pigeonManager.CmdCheckIfShot(playerID, mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue()));
+            lastShootTime = shootTime; //needs to be somewhere else or maybe not???
         }
     }
 }

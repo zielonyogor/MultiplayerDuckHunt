@@ -67,7 +67,6 @@ public class CustomNetworkManager : NetworkManager
             foreach (var player in lobbyPlayers)
             {
                 Destroy(player.gameObject);
-                Debug.Log("deleted");
             }
             lobbyPlayers.Clear();
         }
