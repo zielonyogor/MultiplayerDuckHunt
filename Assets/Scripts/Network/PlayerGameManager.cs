@@ -41,14 +41,6 @@ public class PlayerGameManager : NetworkBehaviour
         playerInput = GetComponent<PlayerInput>();
         pigeonManager = GameObject.FindGameObjectWithTag("PigeonManager").GetComponent<PigeonManager>();
         mainCamera = Camera.main;
-        if (mainCamera == null)
-        {
-            Debug.Log("ciekawe");
-        }
-        else
-        {
-            Debug.Log("camera powinna być");
-        }
     }
 
     [Client]

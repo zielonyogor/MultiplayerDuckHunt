@@ -6,6 +6,7 @@ TagManager:
   tags:
   - UI
   - PigeonManager
+  - RareBird
   layers:
   - Default
   - TransparentFX

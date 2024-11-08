@@ -78,6 +78,5 @@ public class CustomNetworkManager : NetworkManager
         {
             await Task.Yield();
         }
-        Debug.Log("Client is now ready!");
     }
 }
