@@ -1,30 +1,31 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
+using TMPro;
+using Mirror;
 
-public class GameCountdown : MonoBehaviour
+public class GameCountdown : NetworkBehaviour
 {
-    [SerializeField] float roundTime = 100f;
-    private TextMeshProUGUI timerText;
-    private float currentTime;
+    public static UnityEvent OnGameCountdownEnd = new UnityEvent();
+    private Animator animator;
+    private TextMeshProUGUI numberText;
 
-    void Start()
+    public override void OnStartServer()
     {
-        timerText = GetComponent<TextMeshProUGUI>();
-        currentTime = roundTime;
-        StartCoroutine(UpdateTimer());
+        animator = GetComponent<Animator>();
+        numberText = GetComponent<TextMeshProUGUI>();
+        StartCoroutine(PlayCountdown());
+    }
+    private IEnumerator PlayCountdown()
+    {
+        while (animator && animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1f)
+            yield return null;
+        OnGameCountdownEnd.Invoke();
+        Destroy(gameObject);
     }
 
-    private IEnumerator UpdateTimer()
+    public void ChangeNumber(int number)
     {
-        while (currentTime > 0)
-        {
-            currentTime -= Time.deltaTime;
-            timerText.text = TimeSpan.FromSeconds(currentTime).ToString("mm':'ss'.'f");
-            yield return null;
-        }
-        Destroy(this.gameObject);
+        numberText.text = number.ToString();
     }
 }

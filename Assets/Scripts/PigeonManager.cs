@@ -11,6 +11,8 @@ public class PigeonManager : NetworkBehaviour
     private LayerMask layerMask;
     public GameContainer gameContainer;
 
+    private bool gameHasStarted = false;
+
     private List<Pigeon> pigeons = new List<Pigeon>();
     private List<Pigeon> rareBirds = new List<Pigeon>();
     private float timeBetweenSpawn = 0.5f;
@@ -25,6 +27,11 @@ public class PigeonManager : NetworkBehaviour
     public override void OnStartServer()
     {
         gameContainer = GameObject.FindGameObjectWithTag("UI").GetComponent<GameContainer>();
+        GameCountdown.OnGameCountdownEnd.AddListener(() =>
+        {
+            gameHasStarted = true;
+        });
+
         layerMask = LayerMask.GetMask("Birds");
         for (int i = 0; i < transform.childCount; i++)
         {
@@ -45,6 +52,7 @@ public class PigeonManager : NetworkBehaviour
 
     private void Update()
     {
+        if (!gameHasStarted) return;
         if (Time.time - lastSpawnTime > timeBetweenSpawn)
         {
             foreach (var pigeon in pigeons) //for now spawning only normal pigeons
