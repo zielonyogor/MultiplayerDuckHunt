@@ -8,17 +8,21 @@ using UnityEngine.Events;
 
 public class GameTimer : NetworkBehaviour
 {
-    [SerializeField] float roundTime = 100f;
+    [SerializeField] float roundTime = 120f;
     private TextMeshProUGUI timerText;
 
     public static UnityEvent OnTimerEnd = new UnityEvent();
 
-    [SyncVar]
+    [SyncVar(hook = nameof(OnTimeChange))]
     public float currentTime;
+
+    private void Awake()
+    {
+        timerText = GetComponent<TextMeshProUGUI>();
+    }
 
     public override void OnStartServer()
     {
-        timerText = GetComponent<TextMeshProUGUI>();
         currentTime = roundTime;
         timerText.text = TimeSpan.FromSeconds(currentTime).ToString("mm':'ss'.'f");
         GameCountdown.OnGameCountdownEnd.AddListener(() =>
@@ -32,9 +36,14 @@ public class GameTimer : NetworkBehaviour
         while (currentTime > 0)
         {
             currentTime -= Time.deltaTime;
-            timerText.text = TimeSpan.FromSeconds(currentTime).ToString("mm':'ss'.'f");
             yield return null;
         }
         OnTimerEnd.Invoke();
+    }
+
+    private void OnTimeChange(float oldTime, float newTime)
+    {
+        currentTime = newTime;
+        timerText.text = TimeSpan.FromSeconds(currentTime).ToString("mm':'ss'.'f");
     }
 }

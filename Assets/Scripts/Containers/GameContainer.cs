@@ -10,19 +10,13 @@ public class GameContainer : NetworkBehaviour
     [Header("Timer")]
     public GameTimer timer;
 
-
     [SyncVar(hook = nameof(OnPlayer1ScoreChanged))]
     private int player1Score = 0;
 
     [SyncVar(hook = nameof(OnPlayer2ScoreChanged))]
     private int player2Score = 0;
 
-    public override void OnStartServer()
-    {
-        PigeonManager.OnPigeonShot.AddListener(UpdateScore);
-    }
-
-    public void UpdateScore(int playerID, int pigeonID)
+    public void UpdateScore(int playerID, int score)
     {
         Debug.Log("Updating score");
         if (playerID == 0)

@@ -13,7 +13,10 @@ public enum PigeonState
 public class Pigeon : NetworkBehaviour
 {
     public int pigeonID = 0;
+    [Header("Pigeon variables")]
     public float speed = 5f;
+    public int score = 10;
+
     public PigeonState pigeonState;
 
     private int direction = 1;

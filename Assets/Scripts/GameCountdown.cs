@@ -10,22 +10,39 @@ public class GameCountdown : NetworkBehaviour
     private Animator animator;
     private TextMeshProUGUI numberText;
 
-    public override void OnStartServer()
+    [SyncVar]
+    private int countDownNumber = 3;
+
+    private void Awake()
     {
         animator = GetComponent<Animator>();
         numberText = GetComponent<TextMeshProUGUI>();
+    }
+
+    public override void OnStartServer()
+    {
         StartCoroutine(PlayCountdown());
     }
     private IEnumerator PlayCountdown()
     {
         while (animator && animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1f)
+        {
+            Debug.Log(animator.GetCurrentAnimatorStateInfo(0).normalizedTime);
             yield return null;
-        OnGameCountdownEnd.Invoke();
-        Destroy(gameObject);
+        }
+        EndCountdown();
     }
 
     public void ChangeNumber(int number)
     {
-        numberText.text = number.ToString();
+        countDownNumber = number;
+        numberText.text = countDownNumber.ToString();
+    }
+
+    [Server]
+    private void EndCountdown()
+    {
+        OnGameCountdownEnd.Invoke();
+        NetworkServer.Destroy(gameObject);
     }
 }

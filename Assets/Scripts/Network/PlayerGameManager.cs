@@ -20,7 +20,7 @@ public class PlayerGameManager : NetworkBehaviour
 
     [Header("Game properties")]
     private PlayerInput playerInput;
-    [SerializeField] float shootCooldown = 0.5f;
+    [SerializeField] float shootCooldown = 0.1f;
 
     private float lastShootTime = 0;
     public PigeonManager pigeonManager;

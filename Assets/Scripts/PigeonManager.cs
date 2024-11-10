@@ -11,17 +11,28 @@ public class PigeonManager : NetworkBehaviour
     private LayerMask layerMask;
     public GameContainer gameContainer;
 
-    private bool gameHasStarted = false;
+    private bool gameIsPlaying = false;
 
     private List<Pigeon> pigeons = new List<Pigeon>();
-    private List<Pigeon> rareBirds = new List<Pigeon>();
     private float timeBetweenSpawn = 0.5f;
     private float lastSpawnTime;
 
+    [Header("Basic pigeons spawn range")]
+    [SerializeField] float minSpawnTime = 0.5f;
+    [SerializeField] float maxSpawnTime = 4f;
 
-    float minSpawnTime = 0.5f;
-    float maxSpawnTime = 4f;
+    private List<Pigeon> rareBirds = new List<Pigeon>();
 
+    [Header("Time left since rare birds can spawn")]
+    [SerializeField] private float rareStartTime = 80f;
+    private float timeBetweenRareSpawn = 5f;
+    private float lastRareSpawnTime;
+
+    [Header("Rare bird spawn range")]
+    [SerializeField] float minRareSpawnTime = 4f;
+    [SerializeField] float maxRareSpawnTime = 18f;
+
+    [Header("Shot marker for debug")]
     public GameObject shotMarkerPrefab;
 
     public override void OnStartServer()
@@ -29,7 +40,11 @@ public class PigeonManager : NetworkBehaviour
         gameContainer = GameObject.FindGameObjectWithTag("UI").GetComponent<GameContainer>();
         GameCountdown.OnGameCountdownEnd.AddListener(() =>
         {
-            gameHasStarted = true;
+            gameIsPlaying = true;
+        });
+        GameTimer.OnTimerEnd.AddListener(() =>
+        {
+            gameIsPlaying = false;
         });
 
         layerMask = LayerMask.GetMask("Birds");
@@ -40,7 +55,6 @@ public class PigeonManager : NetworkBehaviour
             if (child.CompareTag("RareBird"))
             {
                 rareBirds.Add(pigeonScript);
-
             }
             else
             {
@@ -52,10 +66,10 @@ public class PigeonManager : NetworkBehaviour
 
     private void Update()
     {
-        if (!gameHasStarted) return;
+        if (!gameIsPlaying) return;
         if (Time.time - lastSpawnTime > timeBetweenSpawn)
         {
-            foreach (var pigeon in pigeons) //for now spawning only normal pigeons
+            foreach (var pigeon in pigeons)
             {
                 if (pigeon.pigeonState == PigeonState.Standby)
                 {
@@ -64,6 +78,22 @@ public class PigeonManager : NetworkBehaviour
 
                     lastSpawnTime = Time.time;
                     timeBetweenSpawn = Random.Range(minSpawnTime, maxSpawnTime);
+                    return;
+                }
+            }
+        }
+        if (gameContainer.timer.currentTime > rareStartTime) return;
+        if (Time.time - lastRareSpawnTime > timeBetweenRareSpawn)
+        {
+            foreach (var rareBird in rareBirds)
+            {
+                if (rareBird.pigeonState == PigeonState.Standby)
+                {
+                    int birdDirection = Random.value < 0.5f ? 1 : -1; //50% chance for left or right
+                    rareBird.StartFlying(birdDirection);
+
+                    lastSpawnTime = Time.time;
+                    timeBetweenRareSpawn = Random.Range(minRareSpawnTime, maxRareSpawnTime);
                     return;
                 }
             }
@@ -84,6 +114,7 @@ public class PigeonManager : NetworkBehaviour
 
             Debug.Log("Shot a pigeon with ID: " + hit.collider.gameObject.GetComponent<Pigeon>().pigeonID);
             OnPigeonShot.Invoke(playerID, hit.collider.gameObject.GetComponent<Pigeon>().pigeonID);
+            gameContainer.UpdateScore(playerID, shotPigeon.score);
         }
     }
 
