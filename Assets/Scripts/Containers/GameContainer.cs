@@ -9,6 +9,8 @@ public class GameContainer : NetworkBehaviour
     [SerializeField] TextMeshProUGUI player2ScoreText;
     [Header("Timer")]
     public GameTimer timer;
+    [Header("Game over screen")]
+    [SerializeField] GameObject gameOverScreen;
 
     [SyncVar(hook = nameof(OnPlayer1ScoreChanged))]
     private int player1Score = 0;

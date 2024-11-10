@@ -14,11 +14,13 @@ public class Pigeon : NetworkBehaviour
 {
     public int pigeonID = 0;
     [Header("Pigeon variables")]
-    public float speed = 5f;
+    public float minSpeed = 4f;
+    public float maxSpeed = 5f;
     public int score = 10;
 
     public PigeonState pigeonState;
 
+    private float speed;
     private int direction = 1;
     private SpriteRenderer spriteRenderer;
 
@@ -32,6 +34,7 @@ public class Pigeon : NetworkBehaviour
 
     public void StartFlying(int direction)
     {
+        speed = Random.Range(minSpeed, maxSpeed);
         float yPosition = Random.Range(-3, 3);
         this.direction = direction;
         if (direction == -1)

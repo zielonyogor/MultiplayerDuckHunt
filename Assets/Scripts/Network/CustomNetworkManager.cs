@@ -32,7 +32,7 @@ public class CustomNetworkManager : NetworkManager
         // add ServerChangeScene() to 'if' later
         if (numPlayers == 2)
         { }
-        ServerChangeScene("Test");
+        ServerChangeScene("GameScene");
     }
 
     public override void ServerChangeScene(string newSceneName)
@@ -47,7 +47,7 @@ public class CustomNetworkManager : NetworkManager
 
     public override async void OnServerSceneChanged(string sceneName)
     {
-        if (sceneName == "Test")
+        if (sceneName == "GameScene")
         {
 
             foreach (var (conn, id) in connectionsToReplace)

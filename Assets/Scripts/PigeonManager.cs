@@ -18,8 +18,8 @@ public class PigeonManager : NetworkBehaviour
     private float lastSpawnTime;
 
     [Header("Basic pigeons spawn range")]
-    [SerializeField] float minSpawnTime = 0.5f;
-    [SerializeField] float maxSpawnTime = 4f;
+    [SerializeField] float minSpawnTime = 0.1f;
+    [SerializeField] float maxSpawnTime = 3f;
 
     private List<Pigeon> rareBirds = new List<Pigeon>();
 
@@ -92,7 +92,7 @@ public class PigeonManager : NetworkBehaviour
                     int birdDirection = Random.value < 0.5f ? 1 : -1; //50% chance for left or right
                     rareBird.StartFlying(birdDirection);
 
-                    lastSpawnTime = Time.time;
+                    lastRareSpawnTime = Time.time;
                     timeBetweenRareSpawn = Random.Range(minRareSpawnTime, maxRareSpawnTime);
                     return;
                 }
