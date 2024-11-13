@@ -19,16 +19,20 @@ public class GameContainer : NetworkBehaviour
     [SyncVar(hook = nameof(OnPlayer2ScoreChanged))]
     private int player2Score = 0;
 
-    public override void OnStartClient()
+    private CustomNetworkManager networkManager;
+
+    public override void OnStartServer()
     {
-        GameTimer.OnTimerEnd.AddListener(HandleGameOver);
+        GameTimer.OnTimerEnd.AddListener(RpcHandleGameOver);
+        networkManager = NetworkManager.singleton as CustomNetworkManager;
     }
 
-    private void HandleGameOver()
+    [ClientRpc]
+    private void RpcHandleGameOver()
     {
         Debug.Log("Time is up!");
-        gameOverScreen.SetActive(true);
-        TextMeshProUGUI resultText = gameOverScreen.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+        gameOverScreen.transform.GetChild(0).gameObject.SetActive(true);
+        TextMeshProUGUI resultText = gameOverScreen.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>();
         Debug.Log(player1Score + " i " + player2Score);
         if (player1Score > player2Score)
         {
@@ -41,10 +45,15 @@ public class GameContainer : NetworkBehaviour
 
         if (isServer)
         {
-            Button mainMenuButton = gameOverScreen.transform.GetChild(2).GetComponent<Button>();
+            Button mainMenuButton = gameOverScreen.transform.GetChild(0).GetChild(2).GetComponent<Button>();
             mainMenuButton.onClick.AddListener(() =>
             {
-                Debug.Log("here we go to main menu - add reference to CustomNetworkManager")
+                Debug.Log("here we go to main menu - add reference to CustomNetworkManager");
+            });
+            Button retryButton = gameOverScreen.transform.GetChild(0).GetChild(1).GetComponent<Button>();
+            retryButton.onClick.AddListener(() =>
+            {
+                networkManager.ServerChangeScene("GameScene");
             });
         }
     }

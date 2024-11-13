@@ -21,14 +21,19 @@ public class Pigeon : NetworkBehaviour
     public PigeonState pigeonState;
 
     private float speed;
+
+    [SyncVar(hook = nameof(OnDirectionChanged))]
     private int direction = 1;
     private SpriteRenderer spriteRenderer;
+
+    private void Awake()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+    }
 
     public override void OnStartServer()
     {
         PigeonManager.OnPigeonShot.AddListener(HandlePigeonShot);
-
-        spriteRenderer = GetComponent<SpriteRenderer>();
         pigeonState = PigeonState.Standby;
     }
 
@@ -45,7 +50,6 @@ public class Pigeon : NetworkBehaviour
         {
             transform.position = new Vector3(-10, yPosition, 0);
         }
-        spriteRenderer.flipX = this.direction == -1;
         ChangeState(PigeonState.Fly);
     }
 
@@ -93,5 +97,10 @@ public class Pigeon : NetworkBehaviour
     {
         if (pigeonID != this.pigeonID) return;
         ChangeState(PigeonState.Shot);
+    }
+
+    private void OnDirectionChanged(int oldDirection, int newDirection)
+    {
+        spriteRenderer.flipX = direction == -1;
     }
 }

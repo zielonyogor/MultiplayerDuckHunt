@@ -19,7 +19,7 @@ public class PigeonManager : NetworkBehaviour
 
     [Header("Basic pigeons spawn range")]
     [SerializeField] float minSpawnTime = 0.1f;
-    [SerializeField] float maxSpawnTime = 3f;
+    [SerializeField] float maxSpawnTime = 2f;
 
     private List<Pigeon> rareBirds = new List<Pigeon>();
 
@@ -29,8 +29,8 @@ public class PigeonManager : NetworkBehaviour
     private float lastRareSpawnTime;
 
     [Header("Rare bird spawn range")]
-    [SerializeField] float minRareSpawnTime = 4f;
-    [SerializeField] float maxRareSpawnTime = 18f;
+    [SerializeField] float minRareSpawnTime = 3f;
+    [SerializeField] float maxRareSpawnTime = 10f;
 
     [Header("Shot marker for debug")]
     public GameObject shotMarkerPrefab;

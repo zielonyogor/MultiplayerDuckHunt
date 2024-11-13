@@ -14,7 +14,7 @@ public class LobbyContainer : MonoBehaviour
 
     private void Start()
     {
-        networkManager = NetworkManager.singleton as CustomNetworkManager; ;
+        networkManager = NetworkManager.singleton as CustomNetworkManager;
         startGameButton.onClick.AddListener(StartGame);
         addressInputField.onEndEdit.AddListener(delegate
         {

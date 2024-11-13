@@ -27,7 +27,6 @@ public class GameCountdown : NetworkBehaviour
     {
         while (animator && animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1f)
         {
-            Debug.Log(animator.GetCurrentAnimatorStateInfo(0).normalizedTime);
             yield return null;
         }
         EndCountdown();

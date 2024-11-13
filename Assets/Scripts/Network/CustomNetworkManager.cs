@@ -20,6 +20,7 @@ public class CustomNetworkManager : NetworkManager
     {
         PlayerLobby player = Instantiate(lobbyPlayerPrefab);
         player.playerID = numPlayers;
+        Debug.Log("Number of players: " + numPlayers);
         player.gameObject.name = "LobbyPlayer_" + player.playerID;
         lobbyPlayers.Add(player);
 

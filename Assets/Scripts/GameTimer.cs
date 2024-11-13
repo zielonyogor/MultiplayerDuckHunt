@@ -8,7 +8,7 @@ using UnityEngine.Events;
 
 public class GameTimer : NetworkBehaviour
 {
-    [SerializeField] float roundTime = 120f;
+    private float roundTime = 120f;
     private TextMeshProUGUI timerText;
 
     public static UnityEvent OnTimerEnd = new UnityEvent();
