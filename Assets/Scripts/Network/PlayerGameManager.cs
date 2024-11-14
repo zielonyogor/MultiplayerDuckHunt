@@ -51,7 +51,7 @@ public class PlayerGameManager : NetworkBehaviour
         if (shootTime - lastShootTime >= shootCooldown)
         {
             pigeonManager.CmdCheckIfShot(playerID, mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue()));
-            lastShootTime = shootTime; //needs to be somewhere else or maybe not???
+            lastShootTime = shootTime;
         }
     }
 }

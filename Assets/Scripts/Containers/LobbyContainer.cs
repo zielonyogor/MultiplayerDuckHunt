@@ -4,24 +4,27 @@ using UnityEngine;
 using Mirror;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
 public class LobbyContainer : MonoBehaviour
 {
     private CustomNetworkManager networkManager;
     public Button startGameButton;
-    [SerializeField] Button startOrJoinButton;
+    [SerializeField] Button startServerButton;
+    [SerializeField] Button joinServerButton;
     [SerializeField] TMP_InputField addressInputField;
 
     private void Start()
     {
         networkManager = NetworkManager.singleton as CustomNetworkManager;
-        startGameButton.onClick.AddListener(StartGame);
-        addressInputField.onEndEdit.AddListener(delegate
-        {
-            ChangeButtonFunctionality(addressInputField.text);
-        });
 
-        startOrJoinButton.onClick.AddListener(StartServer);
+        startGameButton.onClick.AddListener(StartGame);
+        startGameButton.interactable = false;
+
+        startServerButton.onClick.AddListener(StartServer);
+        joinServerButton.onClick.AddListener(JoinGame);
+
+        addressInputField.text = "localhost";
     }
 
     public void StartGame()
@@ -34,31 +37,31 @@ public class LobbyContainer : MonoBehaviour
 
     public void StartServer()
     {
-        networkManager.StartHost();
-        Debug.Log(networkManager.networkAddress);
+        string ipAddress = addressInputField.text;
+        if (String.IsNullOrEmpty(ipAddress))
+        {
+            Debug.Log("you have to enter ip address");
+        }
+        else
+        {
+            networkManager.networkAddress = ipAddress;
+            networkManager.StartHost();
+            Debug.Log(networkManager.networkAddress);
+        }
     }
 
     public void JoinGame()
     {
         string ipAddress = addressInputField.text;
-        Debug.Log("joining...");
-        networkManager.StartClient();
-    }
-
-    public void ChangeButtonFunctionality(string inputText)
-    {
-        Debug.Log(inputText);
-        if (inputText == "")
+        if (String.IsNullOrEmpty(ipAddress))
         {
-            startOrJoinButton.onClick.RemoveListener(JoinGame);
-            startOrJoinButton.onClick.AddListener(StartServer);
-            startOrJoinButton.GetComponentInChildren<TextMeshProUGUI>().text = "create server";
+            Debug.Log("you have to enter ip address");
         }
         else
         {
-            startOrJoinButton.onClick.RemoveListener(StartServer);
-            startOrJoinButton.onClick.AddListener(JoinGame);
-            startOrJoinButton.GetComponentInChildren<TextMeshProUGUI>().text = "join server";
+            networkManager.networkAddress = ipAddress;
+            startGameButton.interactable = true;
+            networkManager.StartClient();
         }
     }
 }
